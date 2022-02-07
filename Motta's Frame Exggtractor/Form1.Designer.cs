@@ -45,6 +45,7 @@
             this.ProgressLabel = new System.Windows.Forms.Label();
             this.PercentLabel = new System.Windows.Forms.Label();
             this.CancelButton = new System.Windows.Forms.Button();
+            this.SelectOutputFolderButton = new System.Windows.Forms.Button();
             this.Box.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -119,11 +120,12 @@
             this.OutputPathBox.Location = new System.Drawing.Point(12, 132);
             this.OutputPathBox.Name = "OutputPathBox";
             this.OutputPathBox.ReadOnly = true;
-            this.OutputPathBox.Size = new System.Drawing.Size(443, 20);
+            this.OutputPathBox.Size = new System.Drawing.Size(339, 20);
             this.OutputPathBox.TabIndex = 6;
             // 
             // Box
             // 
+            this.Box.Controls.Add(this.SelectOutputFolderButton);
             this.Box.Controls.Add(this.CancelButton);
             this.Box.Controls.Add(this.label1);
             this.Box.Controls.Add(this.ModeSelector);
@@ -208,6 +210,16 @@
             this.CancelButton.UseVisualStyleBackColor = true;
             this.CancelButton.Click += new System.EventHandler(this.CancelButton_Click);
             // 
+            // SelectOutputFolderButton
+            // 
+            this.SelectOutputFolderButton.Location = new System.Drawing.Point(357, 130);
+            this.SelectOutputFolderButton.Name = "SelectOutputFolderButton";
+            this.SelectOutputFolderButton.Size = new System.Drawing.Size(98, 25);
+            this.SelectOutputFolderButton.TabIndex = 12;
+            this.SelectOutputFolderButton.Text = "Select Folder";
+            this.SelectOutputFolderButton.UseVisualStyleBackColor = true;
+            this.SelectOutputFolderButton.Click += new System.EventHandler(this.SelectOutputFolderButton_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -250,6 +262,7 @@
         private System.Windows.Forms.ComboBox ModeSelector;
         private System.Windows.Forms.Label PercentLabel;
         private System.Windows.Forms.Button CancelButton;
+        private System.Windows.Forms.Button SelectOutputFolderButton;
     }
 }
 

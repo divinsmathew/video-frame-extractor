@@ -60,6 +60,21 @@ namespace Frame_Extractor
             }
         }
 
+        private void SelectOutputFolderButton_Click(object sender, EventArgs e)
+        {
+            using (var folderBrowserDialog = new FolderBrowserDialog())
+            {
+                folderBrowserDialog.Description = "Select output directory to save the frames.";
+                DialogResult result = folderBrowserDialog.ShowDialog();
+
+                if (result == DialogResult.OK && !string.IsNullOrWhiteSpace(folderBrowserDialog.SelectedPath))
+                {
+                    OutputPath = folderBrowserDialog.SelectedPath;
+                    OutputPathBox.Text = OutputPath;
+                }
+            }
+        }
+
         private async void ExtractButton_Click(object sender, EventArgs e)
         {
             Directory.CreateDirectory(OutputPath);
@@ -73,7 +88,16 @@ namespace Frame_Extractor
 
             await StartExtraction();
 
-            if(CancelSignal)
+            ProgressLabel.Text = "";
+            PercentLabel.Text = "";
+            VideoPathBox.Enabled = true;
+            SelectVideoButton.Enabled = true;
+            CancelButton.Enabled = false;
+            ExtractButton.Enabled = true;
+            OutputPathBox.Enabled = true;
+            ModeSelector.Enabled = true;
+
+            if (CancelSignal)
             {
                 CancelSignal = false;
                 MessageBox.Show("Operation was aborted.", "Aborted", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -84,15 +108,6 @@ namespace Frame_Extractor
                 if (r == DialogResult.Yes)
                     System.Diagnostics.Process.Start(OutputPath);
             }
-
-            ProgressLabel.Text = "";
-            PercentLabel.Text = "";
-            VideoPathBox.Enabled = true;
-            SelectVideoButton.Enabled = true;
-            CancelButton.Enabled = false;
-            ExtractButton.Enabled = true;
-            OutputPathBox.Enabled = true;
-            ModeSelector.Enabled = true;
         }
 
         private void CancelButton_Click(object sender, EventArgs e)
