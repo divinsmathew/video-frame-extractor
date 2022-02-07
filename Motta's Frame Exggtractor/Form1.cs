@@ -7,18 +7,20 @@ using MediaToolkit;
 using MediaToolkit.Model;
 using MediaToolkit.Options;
 
-namespace Motta_s_Frame_Extractor
+namespace Frame_Extractor
 {
     public partial class Form1 : Form
     {
         string OutputPath, InputPath;
         double TotalFrames, Period;
+        bool CancelSignal;
 
         MediaFile Mp4Media;
 
         public Form1()
         {
             InitializeComponent();
+            CancelSignal = false;
         }
 
         private void SelectVideoButton_Click(object sender, EventArgs e)
@@ -33,7 +35,7 @@ namespace Motta_s_Frame_Extractor
             if (openFileDialog1.ShowDialog() == DialogResult.OK)
             {
                 InputPath = openFileDialog1.FileName;
-                OutputPath = Directory.GetParent(InputPath) + "\\Eggxtracted - " + Path.GetFileNameWithoutExtension(InputPath);
+                OutputPath = Directory.GetParent(InputPath) + "\\Extracted - " + Path.GetFileNameWithoutExtension(InputPath);
                 VideoPathBox.Text = InputPath;
                 OutputPathBox.Text = OutputPath;
 
@@ -45,45 +47,62 @@ namespace Motta_s_Frame_Extractor
                 }
 
                 TotalFrames = Mp4Media.Metadata.Duration.TotalSeconds * Mp4Media.Metadata.VideoData.Fps;
-                EggxtractionProgress.Maximum = (int)TotalFrames;
-                EggxtractionProgress.Value = 0;
+                ExtractionProgress.Maximum = (int)TotalFrames;
+                ExtractionProgress.Value = 0;
 
                 TitleLabel.Text = "Title : " + Path.GetFileNameWithoutExtension(InputPath);
                 FrameRateLabel.Text = "Frame Rate : " + Mp4Media.Metadata.VideoData.Fps.ToString() + " FPS";
                 DurationLabel.Text = "Duration : " + Mp4Media.Metadata.Duration.ToString();
-                ExpectedFramesLabel.Text = "Expected Frames : " + EggxtractionProgress.Maximum.ToString();
+                ExpectedFramesLabel.Text = "Expected Frames : " + ExtractionProgress.Maximum.ToString();
 
                 ModeSelector.SelectedIndex = 0;
-                EggBox.Enabled = true;
+                Box.Enabled = true;
             }
         }
 
-        private async void EggxtractButton_Click(object sender, EventArgs e)
+        private async void ExtractButton_Click(object sender, EventArgs e)
         {
             Directory.CreateDirectory(OutputPath);
 
-            EggBox.Enabled = false;
             VideoPathBox.Enabled = false;
             SelectVideoButton.Enabled = false;
+            CancelButton.Enabled = true;
+            ExtractButton.Enabled = false;
+            OutputPathBox.Enabled = false;
+            ModeSelector.Enabled = false;
 
-            await StartEggxtraction();
+            await StartExtraction();
 
-            DialogResult r = MessageBox.Show(EggxtractionProgress.Maximum.ToString() + " Frames were eggxtracted. Open Output folder?", "Operation Completed Successfully", MessageBoxButtons.YesNo, MessageBoxIcon.Information);
-            if(r == DialogResult.Yes)
-                System.Diagnostics.Process.Start(OutputPath);
+            if(CancelSignal)
+            {
+                CancelSignal = false;
+                MessageBox.Show("Operation was aborted.", "Aborted", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            else
+            {
+                DialogResult r = MessageBox.Show(ExtractionProgress.Maximum.ToString() + " Frames were extracted. Open Output folder?", "Operation Completed Successfully", MessageBoxButtons.YesNo, MessageBoxIcon.Information);
+                if (r == DialogResult.Yes)
+                    System.Diagnostics.Process.Start(OutputPath);
+            }
 
             ProgressLabel.Text = "";
             PercentLabel.Text = "";
             VideoPathBox.Enabled = true;
             SelectVideoButton.Enabled = true;
+            CancelButton.Enabled = false;
+            ExtractButton.Enabled = true;
+            OutputPathBox.Enabled = true;
+            ModeSelector.Enabled = true;
         }
 
-        private void Form1_Load(object sender, EventArgs e)
+        private void CancelButton_Click(object sender, EventArgs e)
         {
-
+            DialogResult r = MessageBox.Show("Sure to abort?", "Confirm", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+            if (r == DialogResult.Yes)
+                CancelSignal = true;
         }
 
-        private async Task StartEggxtraction()
+        private async Task StartExtraction()
         {
             await Task.Run(delegate
             {
@@ -91,18 +110,20 @@ namespace Motta_s_Frame_Extractor
                 {
                     double seeker = 0;
 
-                    for (int i = 0; i < EggxtractionProgress.Maximum; i++, seeker += Period)
+                    for (int i = 0; i < ExtractionProgress.Maximum; i++, seeker += Period)
                     {
                         var options = new ConversionOptions { Seek = TimeSpan.FromSeconds(seeker) };
-                        var outputFile = new MediaFile { Filename = string.Format("{0}\\EggFrame-{1}.jpeg", OutputPath, i) };
+                        var outputFile = new MediaFile { Filename = string.Format("{0}\\Frame-{1}.jpeg", OutputPath, i) };
                         engine.GetThumbnail(Mp4Media, outputFile, options);
 
-                        EggxtractionProgress.Invoke(new Action(delegate 
+                        ExtractionProgress.Invoke(new Action(delegate 
                         {
-                            EggxtractionProgress.Value++;
-                            ProgressLabel.Text = "Frames Done : " + i.ToString() + "/" + EggxtractionProgress.Maximum.ToString();
-                            PercentLabel.Text = ((i * 100) / EggxtractionProgress.Maximum).ToString() + "%";
+                            ExtractionProgress.Value++;
+                            ProgressLabel.Text = "Frames Done : " + i.ToString() + "/" + ExtractionProgress.Maximum.ToString();
+                            PercentLabel.Text = ((i * 100) / ExtractionProgress.Maximum).ToString() + "%";
                         }));
+
+                        if (CancelSignal) break;
                     }
                 }
             });
@@ -114,13 +135,13 @@ namespace Motta_s_Frame_Extractor
             {
                 case 0:
                     Period = 1D / Mp4Media.Metadata.VideoData.Fps;
-                    EggxtractionProgress.Maximum = (int)TotalFrames;
-                    ExpectedFramesLabel.Text = "Expected Frames : " + EggxtractionProgress.Maximum.ToString();
+                    ExtractionProgress.Maximum = (int)TotalFrames;
+                    ExpectedFramesLabel.Text = "Expected Frames : " + ExtractionProgress.Maximum.ToString();
                     break;
 
                 case 1:
                     Period = 1;
-                    EggxtractionProgress.Maximum = (int)Mp4Media.Metadata.Duration.TotalSeconds;
+                    ExtractionProgress.Maximum = (int)Mp4Media.Metadata.Duration.TotalSeconds;
                     ExpectedFramesLabel.Text = "Expected Frames : " + ((int)Mp4Media.Metadata.Duration.TotalSeconds).ToString();
                     break;
             }

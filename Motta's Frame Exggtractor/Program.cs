@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace Motta_s_Frame_Extractor
+namespace Frame_Extractor
 {
     static class Program
     {

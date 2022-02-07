@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Motta_s_Frame_Extractor.Properties
+namespace Frame_Extractor.Properties
 {
 
 
