@@ -6,8 +6,8 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{2CBD35F1-7647-44C6-8A9B-10DE2D97B37D}</ProjectGuid>
     <OutputType>WinExe</OutputType>
-    <RootNamespace>Motta_s_Frame_Extractor</RootNamespace>
-    <AssemblyName>Motta%27s Frame Eggxtractor</AssemblyName>
+    <RootNamespace>Frame_Extractor</RootNamespace>
+    <AssemblyName>Frame Extractor</AssemblyName>
     <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
